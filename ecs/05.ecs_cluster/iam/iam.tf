@@ -210,3 +210,30 @@ resource "aws_iam_role_policy_attachment" "sample_ecs_autoscale_policy_attachmen
   role       = aws_iam_role.sample_ecs_autoscale_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole"
 }
+/*
+resource "aws_iam_policy" "sample_ecs_autoscale_cloudwatch_policy" {
+  name = "sample_${var.prefix}_ecs_autoscale_cloudwatch_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:SetAlarmState",
+          "cloudwatch:DeleteAlarms",
+          "cloudwatch:PutMetricData"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_additional_permissions" {
+  role       = aws_iam_role.sample_ecs_autoscale_role.name
+  policy_arn = aws_iam_policy.sample_ecs_autoscale_cloudwatch_policy.arn
+}
+*/

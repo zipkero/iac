@@ -1,7 +1,7 @@
 variable "region" {
   type    = string
-  default = "ap-northeast-2"
-  # default = "ap-northeast-1"
+  # default = "ap-northeast-2"
+  default = "ap-northeast-1"
 }
 
 variable "cidr_block" {

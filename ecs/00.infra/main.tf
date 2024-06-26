@@ -1,7 +1,7 @@
 variable "region" {
   type    = string
-  default = "ap-northeast-2"
-  # default = "ap-northeast-1"
+  # default = "ap-northeast-2"
+  default = "ap-northeast-1"
 }
 
 variable "cidr_block" {
@@ -61,20 +61,20 @@ module "endpoint" {
 
   vpc_id = module.vpc.vpc_id
 
-  s3_endpoint_service_name = "com.amazonaws.ap-northeast-2.s3"
-  # s3_endpoint_service_name      = "com.amazonaws.ap-northeast-1.s3"
+  # s3_endpoint_service_name = "com.amazonaws.ap-northeast-2.s3"
+  s3_endpoint_service_name      = "com.amazonaws.ap-northeast-1.s3"
 
-  ecr_api_endpoint_service_name = "com.amazonaws.ap-northeast-2.ecr.api"
-  # ecr_api_endpoint_service_name = "com.amazonaws.ap-northeast-1.ecr.api"
+  # ecr_api_endpoint_service_name = "com.amazonaws.ap-northeast-2.ecr.api"
+  ecr_api_endpoint_service_name = "com.amazonaws.ap-northeast-1.ecr.api"
 
-  ecr_dkr_endpoint_service_name = "com.amazonaws.ap-northeast-2.ecr.dkr"
-  # ecr_dkr_endpoint_service_name = "com.amazonaws.ap-northeast-1.ecr.dkr"
+  # ecr_dkr_endpoint_service_name = "com.amazonaws.ap-northeast-2.ecr.dkr"
+  ecr_dkr_endpoint_service_name = "com.amazonaws.ap-northeast-1.ecr.dkr"
 
-  logs_endpoint_service_name = "com.amazonaws.ap-northeast-2.logs"
-  # logs_endpoint_service_name    = "com.amazonaws.ap-northeast-1.logs"
+  # logs_endpoint_service_name = "com.amazonaws.ap-northeast-2.logs"
+  logs_endpoint_service_name    = "com.amazonaws.ap-northeast-1.logs"
 
-  sts_endpoint_service_name = "com.amazonaws.ap-northeast-2.sts"
-  # sts_endpoint_service_name = "com.amazonaws.ap-northeast-1.sts"
+  # sts_endpoint_service_name = "com.amazonaws.ap-northeast-2.sts"
+  sts_endpoint_service_name = "com.amazonaws.ap-northeast-1.sts"
 
   ecr_api_sg_id = module.sg.ecr_api_sg_id
   ecr_dkr_sg_id = module.sg.ecr_dkr_sg_id

@@ -181,7 +181,7 @@ resource "aws_security_group" "sample_tcp_master_template_sg" {
     from_port   = 5601
     to_port     = 5601
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.cidr_block]
   }
 
   egress {

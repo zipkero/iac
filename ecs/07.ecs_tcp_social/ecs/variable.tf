@@ -90,6 +90,10 @@ variable "cluster_id" {
   type = string
 }
 
+variable "cluster_name" {
+  type = string
+}
+
 variable "ecs_autoscale_role_arn" {
   type = string
 }

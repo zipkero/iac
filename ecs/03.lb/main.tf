@@ -1,7 +1,7 @@
 variable "region" {
   type    = string
-  default = "ap-northeast-2"
-  # default = "ap-northeast-1"
+  # default = "ap-northeast-2"
+  default = "ap-northeast-1"
 }
 
 # environment = "prod" # dev, qa, lqa, fgt, stage, prod
@@ -12,8 +12,8 @@ variable "prefix" {
 
 variable "certificate_id" {
   type    = string
-  default = "arn:aws:acm:ap-northeast-2:296519485637:certificate/ad954597-f89b-4255-bcad-7299ea1ca481"
-  # default = "arn:aws:acm:ap-northeast-1:296519485637:certificate/e46b58dd-ee52-41db-9298-0793b152b00a"
+  # default = "arn:aws:acm:ap-northeast-2:296519485637:certificate/ad954597-f89b-4255-bcad-7299ea1ca481"
+  default = "arn:aws:acm:ap-northeast-1:296519485637:certificate/e46b58dd-ee52-41db-9298-0793b152b00a"
 }
 
 provider "aws" {
@@ -75,6 +75,4 @@ module "lb" {
 
   certificate_id = var.certificate_id
   cidr_block    = data.aws_vpc.sample_vpc.cidr_block
-
-
 }

@@ -2,8 +2,8 @@ resource "aws_ecs_task_definition" "sample_http_backoffice_task_definition" {
   family       = "sample_${var.prefix}_http_backoffice_task_definition"
   requires_compatibilities = ["EC2"]
   network_mode = "awsvpc"
-  cpu          = 1024
-  memory       = 1024
+  cpu          = 1500
+  memory       = 1500
 
   task_role_arn      = var.ecs_task_role_arn
   execution_role_arn = var.ecs_task_execution_role_arn
@@ -67,6 +67,9 @@ resource "aws_ecs_service" "sample_http_backoffice_service" {
   task_definition = aws_ecs_task_definition.sample_http_backoffice_task_definition.arn
   desired_count   = 1
 
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent         = 200
+
   load_balancer {
     target_group_arn = var.alb_tg_5600_arn
     container_name   = "sample_${var.prefix}_http_backoffice"
@@ -76,11 +79,6 @@ resource "aws_ecs_service" "sample_http_backoffice_service" {
   placement_constraints {
     type       = "memberOf"
     expression = "attribute:ServiceName == sample_${var.prefix}_http_backoffice"
-  }
-
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "memory"
   }
 
   network_configuration {

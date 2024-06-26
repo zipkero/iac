@@ -21,11 +21,11 @@ resource "aws_service_discovery_service" "sample_discovery_tcp_master_service" {
 }
 
 resource "aws_ecs_task_definition" "sample_tcp_master_task_definition" {
-  family                   = "sample_${var.prefix}_tcp_master_task_definition"
+  family       = "sample_${var.prefix}_tcp_master_task_definition"
   requires_compatibilities = ["EC2"]
-  network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 1024
+  network_mode = "awsvpc"
+  cpu          = 1500
+  memory       = 3000
 
   task_role_arn      = var.ecs_task_role_arn
   execution_role_arn = var.ecs_task_execution_role_arn
@@ -89,6 +89,9 @@ resource "aws_ecs_service" "sample_tcp_master_service" {
   task_definition = aws_ecs_task_definition.sample_tcp_master_task_definition.arn
   desired_count   = 1
 
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent         = 200
+
   load_balancer {
     target_group_arn = var.nlb_tg_5601_arn
     container_name   = "sample_${var.prefix}_tcp_master"
@@ -104,14 +107,9 @@ resource "aws_ecs_service" "sample_tcp_master_service" {
     expression = "attribute:ServiceName == sample_${var.prefix}_tcp_master"
   }
 
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "memory"
-  }
-
   network_configuration {
     security_groups = [var.tcp_master_service_sg_id]
-    subnets         = var.private_subnet_ids
+    subnets = var.private_subnet_ids
   }
 }
 

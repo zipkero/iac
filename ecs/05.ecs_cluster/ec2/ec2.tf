@@ -1,10 +1,8 @@
 resource "aws_launch_template" "sample_http_report_launch_template" {
-  name_prefix = "sample_${var.prefix}_http_report_launch_template_"
-  # image_id      = "ami-07d95467596b97099"
-  image_id = "ami-03507a48be45b34e7"
-  # instance_type = "t3.micro"
-  instance_type = "t2.medium"
-  key_name      = "sample_keypair"
+  name_prefix   = "sample_${var.prefix}_http_report_launch_template_"
+  image_id      = "ami-02546b361e9bbf323"
+  instance_type = "t2.micro"
+  key_name      = "sample_${var.prefix}_keypair"
 
   iam_instance_profile {
     name = var.ecs_instance_profile_name
@@ -33,12 +31,11 @@ EOF
 }
 
 resource "aws_launch_template" "sample_http_game_launch_template" {
-  name_prefix = "sample_${var.prefix}_http_game_launch_template_"
-  # image_id      = "ami-07d95467596b97099"
-  image_id = "ami-03507a48be45b34e7"
+  name_prefix   = "sample_${var.prefix}_http_game_launch_template_"
+  image_id = "ami-02546b361e9bbf323"
   # instance_type = "c5.large"
-  instance_type = "t2.medium"
-  key_name      = "sample_keypair"
+  instance_type = "t3.small"
+  key_name      = "sample_${var.prefix}_keypair"
 
   iam_instance_profile {
     name = var.ecs_instance_profile_name
@@ -67,12 +64,10 @@ EOF
 }
 
 resource "aws_launch_template" "sample_tcp_master_launch_template" {
-  name_prefix = "sample_${var.prefix}_tcp_master_launch_template_"
-  # image_id      = "ami-07d95467596b97099"
-  image_id = "ami-03507a48be45b34e7"
-  # instance_type = "t3.large"
-  instance_type = "t2.medium"
-  key_name      = "sample_keypair"
+  name_prefix   = "sample_${var.prefix}_tcp_master_launch_template_"
+  image_id      = "ami-02546b361e9bbf323"
+  instance_type = "t3.medium"
+  key_name      = "sample_${var.prefix}_keypair"
 
   iam_instance_profile {
     name = var.ecs_instance_profile_name
@@ -101,12 +96,10 @@ EOF
 }
 
 resource "aws_launch_template" "sample_tcp_social_launch_template" {
-  name_prefix = "sample_${var.prefix}_tcp_social_launch_template_"
-  # image_id      = "ami-07d95467596b97099"
-  image_id = "ami-03507a48be45b34e7"
-  # instance_type = "t3.medium"
-  instance_type = "t2.medium"
-  key_name      = "sample_keypair"
+  name_prefix   = "sample_${var.prefix}_tcp_social_launch_template_"
+  image_id      = "ami-02546b361e9bbf323"
+  instance_type = "t3.medium"
+  key_name      = "sample_${var.prefix}_keypair"
 
   iam_instance_profile {
     name = var.ecs_instance_profile_name
@@ -135,11 +128,10 @@ EOF
 }
 
 resource "aws_launch_template" "sample_http_backoffice_launch_template" {
-  name_prefix = "sample_${var.prefix}_http_backoffice_launch_template_"
-  # image_id      = "ami-07d95467596b97099"
-  image_id = "ami-03507a48be45b34e7"
-  instance_type = "t2.medium"
-  key_name      = "sample_keypair"
+  name_prefix   = "sample_${var.prefix}_http_backoffice_launch_template_"
+  image_id      = "ami-02546b361e9bbf323"
+  instance_type = "t3.small"
+  key_name      = "sample_${var.prefix}_keypair"
 
   iam_instance_profile {
     name = var.ecs_instance_profile_name

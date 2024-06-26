@@ -75,7 +75,7 @@ resource "aws_lb_listener_rule" "sample_alb_listener_5502_host_rule" {
 
   condition {
     host_header {
-      values = ["허용 HOST"]
+      values = ["sample.${var.prefix}.game.api.test.com"]
     }
   }
 }
@@ -145,7 +145,7 @@ resource "aws_lb_listener_rule" "sample_alb_listener_5503_host_rule" {
 
   condition {
     host_header {
-      values = ["허용 HOST"]
+      values = ["sample.${var.prefix}.game.api.test.com"]
     }
   }
 }
@@ -153,18 +153,19 @@ resource "aws_lb_listener_rule" "sample_alb_listener_5503_host_rule" {
 resource "aws_lb_target_group" "sample_alb_tg_5600" {
   name        = "sample-${var.prefix}-alb-tg-5600"
   port        = 5600
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   vpc_id      = var.vpc_id
   target_type = "ip"
 
   health_check {
     path                = "/"
-    protocol            = "HTTP"
+    protocol            = "HTTPS"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
     interval            = 30
+    matcher             = "200-499"
   }
 
   tags = {
@@ -216,7 +217,7 @@ resource "aws_lb_listener_rule" "sample_alb_listener_5600_host_rule" {
 
   condition {
     host_header {
-      values = ["허용 HOST"]
+      values = ["sample.backoffice.${var.prefix}.test.com"]
     }
   }
 }
@@ -227,6 +228,9 @@ resource "aws_lb" "sample_nlb" {
   load_balancer_type = "network"
   subnets            = var.public_subnet_ids
   security_groups = [var.nlb_sg_id]
+
+  enable_cross_zone_load_balancing = true
+  # enable_cross_zone_load_balancing = false
 
   tags = {
     Name = "sample-${var.prefix}-nlb"
@@ -299,9 +303,8 @@ resource "aws_lb_listener" "sample_nlb_listener_5602" {
   }
 }
 
-# alb 에 등록할 별도의 게임 도메인
 resource "aws_route53_record" "sample_alb_game_dns" {
-  name    = "게임 API 도메인"
+  name    = "sample.${var.prefix}.game.api.test.com"
   type    = "A"
   zone_id = "Z09427632GW8U1WHN13W1"
 
@@ -312,9 +315,8 @@ resource "aws_route53_record" "sample_alb_game_dns" {
   }
 }
 
-# alb 에 등록할 별도의 백오피스 도메인
 resource "aws_route53_record" "sample_alb_backoffice_dns" {
-  name    = "백오피스 도메인"
+  name    = "sample.backoffice.${var.prefix}.test.com"
   type    = "A"
   zone_id = "Z09427632GW8U1WHN13W1"
 
@@ -325,10 +327,21 @@ resource "aws_route53_record" "sample_alb_backoffice_dns" {
   }
 }
 
-# nlb 에 등록할 별도의 도메인
 resource "aws_route53_record" "sample_nlb_dns" {
-  name    = "nlb 도메인"
+  name    = "sample.${var.prefix}.social.api.test.com"
   type    = "A"
+  zone_id = "Z09427632GW8U1WHN13W1"
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_lb.sample_nlb.dns_name
+    zone_id                = aws_lb.sample_nlb.zone_id
+  }
+}
+
+resource "aws_route53_record" "sample_nlb_dns_aaaa" {
+  name    = "sample.${var.prefix}.social.api.test.com"
+  type    = "AAAA"
   zone_id = "Z09427632GW8U1WHN13W1"
 
   alias {

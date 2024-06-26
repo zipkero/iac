@@ -1,7 +1,7 @@
 variable "region" {
   type    = string
-  default = "ap-northeast-2"
-  # default = "ap-northeast-1"
+  # default = "ap-northeast-2"
+  default = "ap-northeast-1"
 }
 
 # environment = "prod" # dev, qa, lqa, fgt, stage, prod
@@ -163,7 +163,8 @@ module "ecs" {
   tcp_repo_url        = "296519485637.dkr.ecr.ap-northeast-2.amazonaws.com/sample_server_repo:latest"
   backoffice_repo_url = "296519485637.dkr.ecr.ap-northeast-2.amazonaws.com/sample_backoffice_repo:latest"
 
-  cluster_id = data.aws_ecs_cluster.sample_ecs_cluster.id
+  cluster_id   = data.aws_ecs_cluster.sample_ecs_cluster.id
+  cluster_name = data.aws_ecs_cluster.sample_ecs_cluster.cluster_name
 
   ecs_task_execution_role_arn = data.aws_iam_role.sample_ecs_task_execution_role.arn
   ecs_task_role_arn           = data.aws_iam_role.ecs_task_role_arn.arn

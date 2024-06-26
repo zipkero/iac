@@ -1,8 +1,9 @@
 # VPC 생성
 resource "aws_vpc" "sample_vpc" {
-  cidr_block           = var.cidr_block
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+  cidr_block                       = var.cidr_block
+  enable_dns_hostnames             = true
+  enable_dns_support               = true
+  assign_generated_ipv6_cidr_block = true
 
   tags = {
     Name = "sample_${var.prefix}_vpc"
@@ -42,11 +43,21 @@ resource "aws_nat_gateway" "sample_nat" {
 
 # public subnet 생성
 resource "aws_subnet" "sample_public_subnet" {
-  for_each = {for subnet in var.public_subnet_config : subnet.name => subnet}
+  for_each = {
+    for idx, subnet in var.public_subnet_config : subnet.name => {
+      idx  = idx
+      name = subnet.name
+      cidr = subnet.cidr
+      az   = subnet.az
+    }
+  }
 
   vpc_id            = aws_vpc.sample_vpc.id
   cidr_block        = each.value.cidr
   availability_zone = each.value.az
+
+  ipv6_cidr_block = cidrsubnet(aws_vpc.sample_vpc.ipv6_cidr_block, 8, each.value.idx)
+  assign_ipv6_address_on_creation = true
 
   tags = {
     Name = "${each.value.name}_public_subnet"
@@ -75,6 +86,11 @@ resource "aws_route_table" "sample_public_rt" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.sample_igw.id
+  }
+
+  route {
+    ipv6_cidr_block = "::/0"
+    gateway_id      = aws_internet_gateway.sample_igw.id
   }
 
   tags = {

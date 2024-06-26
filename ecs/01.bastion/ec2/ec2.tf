@@ -1,8 +1,8 @@
 # 점프서버 EC2 인스턴스 생성
 resource "aws_instance" "sample_bastion_instance" {
-  ami                         = "ami-07d95467596b97099"
+  ami                         = "ami-061a125c7c02edb39"
   instance_type               = "t2.micro"
-  key_name                    = "sample_keypair"
+  key_name                    = "sample_${var.prefix}_keypair"
   subnet_id                   = var.public_subnet_ids[0]
   vpc_security_group_ids = [var.bastion_sg_id]
   associate_public_ip_address = true
@@ -26,6 +26,8 @@ sudo systemctl start iptables
 %{ for key in var.ssh_keys ~}
 echo '${key}' | tee -a /home/ec2-user/.ssh/authorized_keys
 %{ endfor ~}
+
+sudo yum install redis6 -y
 EOF
   )
 

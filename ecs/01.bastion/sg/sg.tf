@@ -16,14 +16,14 @@ resource "aws_security_group" "sample_bastion_sg" {
     from_port = 10201
     to_port   = 10201
     protocol  = "tcp"
-    cidr_blocks = ["${var.build_public_ip}/32"]
+    cidr_blocks = ["125.131.148.210/32", "${var.build_public_ip}/32"]
   }
 
   ingress {
     from_port = 443
     to_port   = 443
     protocol  = "tcp"
-    cidr_blocks = ["${var.build_public_ip}/32"]
+    cidr_blocks = ["125.131.148.210/32", "${var.build_public_ip}/32"]
   }
 
   egress {

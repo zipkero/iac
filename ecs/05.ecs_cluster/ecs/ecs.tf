@@ -8,6 +8,11 @@ resource "aws_ecs_cluster" "sample_ecs_cluster" {
   tags = {
     Name = "sample_${var.prefix}_ecs_cluster"
   }
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 
@@ -43,10 +48,23 @@ resource "aws_autoscaling_group" "sample_http_report_asg" {
   }
 }
 
+resource "aws_ecs_capacity_provider" "sample_http_report_ecs_capacity_providers" {
+  name = "sample_${var.prefix}_http_report_ecs_capacity_providers"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.sample_http_report_asg.arn
+    managed_scaling {
+      status = "DISABLED"
+    }
+  }
+  tags = {
+    Name = "sample_${var.prefix}_http_report_ecs_capacity_providers"
+  }
+}
+
 resource "aws_autoscaling_group" "sample_http_game_asg" {
   name                      = "sample_${var.prefix}_http_game_asg"
   min_size                  = 1
-  max_size                  = 1
+  max_size                  = 5
   desired_capacity          = 1
   vpc_zone_identifier       = var.private_subnet_ids
   health_check_type         = "EC2"
@@ -60,6 +78,24 @@ resource "aws_autoscaling_group" "sample_http_game_asg" {
     key                 = "Name"
     value               = "sample_${var.prefix}_http_game_asg"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_ecs_capacity_provider" "sample_http_game_ecs_capacity_providers" {
+  name = "sample_${var.prefix}_http_game_ecs_capacity_providers"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.sample_http_game_asg.arn
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = 80
+      minimum_scaling_step_size = 1
+      maximum_scaling_step_size = 1
+      instance_warmup_period    = 300
+    }
+  }
+
+  tags = {
+    Name = "sample_${var.prefix}_http_game_ecs_capacity_providers"
   }
 }
 
@@ -83,10 +119,23 @@ resource "aws_autoscaling_group" "sample_tcp_master_asg" {
   }
 }
 
+resource "aws_ecs_capacity_provider" "sample_tcp_master_ecs_capacity_providers" {
+  name = "sample_${var.prefix}_tcp_master_ecs_capacity_providers"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.sample_tcp_master_asg.arn
+    managed_scaling {
+      status = "DISABLED"
+    }
+  }
+  tags = {
+    Name = "sample_${var.prefix}_tcp_master_ecs_capacity_providers"
+  }
+}
+
 resource "aws_autoscaling_group" "sample_tcp_social_asg" {
   name                      = "sample_${var.prefix}_tcp_social_asg"
   min_size                  = 1
-  max_size                  = 1
+  max_size                  = 5
   desired_capacity          = 1
   vpc_zone_identifier       = var.private_subnet_ids
   health_check_type         = "EC2"
@@ -100,6 +149,24 @@ resource "aws_autoscaling_group" "sample_tcp_social_asg" {
     key                 = "Name"
     value               = "sample_${var.prefix}_tcp_social_asg"
     propagate_at_launch = true
+  }
+}
+
+resource "aws_ecs_capacity_provider" "sample_tcp_social_ecs_capacity_providers" {
+  name = "sample_${var.prefix}_tcp_social_ecs_capacity_providers"
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.sample_tcp_social_asg.arn
+    managed_scaling {
+      status                    = "ENABLED"
+      target_capacity           = 80
+      minimum_scaling_step_size = 1
+      maximum_scaling_step_size = 1
+      instance_warmup_period    = 300
+    }
+  }
+
+  tags = {
+    Name = "sample_${var.prefix}_tcp_social_ecs_capacity_providers"
   }
 }
 
@@ -120,66 +187,6 @@ resource "aws_autoscaling_group" "sample_http_backoffice_asg" {
     key                 = "Name"
     value               = "sample_${var.prefix}_http_backoffice_asg"
     propagate_at_launch = true
-  }
-}
-
-resource "aws_ecs_capacity_provider" "sample_http_game_ecs_capacity_providers" {
-  name = "sample_${var.prefix}_http_game_ecs_capacity_providers"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.sample_http_game_asg.arn
-    managed_scaling {
-      status                    = "ENABLED"
-      target_capacity           = 100
-      minimum_scaling_step_size = 1
-      maximum_scaling_step_size = 1
-      instance_warmup_period    = 300
-    }
-  }
-  tags = {
-    Name = "sample_${var.prefix}_http_game_ecs_capacity_providers"
-  }
-}
-
-resource "aws_ecs_capacity_provider" "sample_http_report_ecs_capacity_providers" {
-  name = "sample_${var.prefix}_http_report_ecs_capacity_providers"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.sample_http_report_asg.arn
-    managed_scaling {
-      status = "DISABLED"
-    }
-  }
-  tags = {
-    Name = "sample_${var.prefix}_http_report_ecs_capacity_providers"
-  }
-}
-
-resource "aws_ecs_capacity_provider" "sample_tcp_social_ecs_capacity_providers" {
-  name = "sample_${var.prefix}_tcp_social_ecs_capacity_providers"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.sample_tcp_social_asg.arn
-    managed_scaling {
-      status                    = "ENABLED"
-      target_capacity           = 100
-      minimum_scaling_step_size = 1
-      maximum_scaling_step_size = 1
-      instance_warmup_period    = 300
-    }
-  }
-  tags = {
-    Name = "sample_${var.prefix}_tcp_social_ecs_capacity_providers"
-  }
-}
-
-resource "aws_ecs_capacity_provider" "sample_tcp_master_ecs_capacity_providers" {
-  name = "sample_${var.prefix}_tcp_master_ecs_capacity_providers"
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.sample_tcp_master_asg.arn
-    managed_scaling {
-      status = "DISABLED"
-    }
-  }
-  tags = {
-    Name = "sample_${var.prefix}_tcp_master_ecs_capacity_providers"
   }
 }
 

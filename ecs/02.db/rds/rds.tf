@@ -21,7 +21,7 @@ resource "aws_rds_cluster" "sample_rds_cluster" {
   skip_final_snapshot     = true
 
   vpc_security_group_ids = [var.mysql_sg_id]
-  db_subnet_group_name = aws_db_subnet_group.sample_mysql_subnet_group.name
+  db_subnet_group_name   = aws_db_subnet_group.sample_mysql_subnet_group.name
 
   tags = {
     Name = "sample-${var.prefix}-rds-cluster"
