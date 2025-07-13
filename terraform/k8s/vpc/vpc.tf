@@ -1,10 +1,8 @@
-provider "aws" {
-  region = "ap-northeast-2" # 서울 리전 사용
-}
-
 # vpc
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
     Name = "${var.prefix}-vpc"
@@ -21,13 +19,22 @@ resource "aws_internet_gateway" "igw" {
 }
 
 # public subnet
-resource "aws_subnet" "public_subnet_01" {
+resource "aws_subnet" "public_subnet" {
+  for_each = {
+    for idx, subnet in var.public_subnet_config : tostring(idx) => {
+      idx  = idx
+      name = subnet.name
+      cidr = subnet.cidr
+      az   = subnet.az
+    }
+  }
+
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "ap-northeast-2a"
+  cidr_block        = each.value.cidr
+  availability_zone = each.value.az
 
   tags = {
-    Name = "${var.prefix}-subnet-01"
+    Name = "${var.prefix}-${each.value.name}"
   }
 }
 
@@ -46,23 +53,28 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_route_table_association" "public_rt_association" {
-  subnet_id      = aws_subnet.public_subnet_01.id
+  for_each = aws_subnet.public_subnet
+
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public_rt.id
 }
 
 # eip
 resource "aws_eip" "nat_eip" {
-  domain = "vpc"
+  for_each = aws_subnet.public_subnet
 
+  domain = "vpc"
   tags = {
-    Name = "${var.prefix}-nat-eip"
+    Name = "${var.prefix}-nat-eip-${each.key}"
   }
 }
 
 # nat
 resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.public_subnet_01.id
+  for_each = aws_subnet.public_subnet
+
+  allocation_id = aws_eip.nat_eip[each.key].id
+  subnet_id     = aws_subnet.public_subnet[each.key].id
 
   tags = {
     Name = "${var.prefix}-nat"
@@ -70,32 +82,40 @@ resource "aws_nat_gateway" "nat" {
 }
 
 # private subnet
-resource "aws_subnet" "private_subnet_01" {
+resource "aws_subnet" "private_subnet" {
+  for_each = {
+    for idx, subnet in var.private_subnet_config : tostring(idx) => subnet
+  }
+
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "ap-northeast-2a"
+  cidr_block        = each.value.cidr
+  availability_zone = each.value.az
 
   tags = {
-    Name = "${var.prefix}-private-subnet"
+    Name = "${var.prefix}-${each.value.name}"
   }
 }
 
 # private rt
 resource "aws_route_table" "private_rt" {
+  for_each = aws_nat_gateway.nat
+
   vpc_id = aws_vpc.vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
+    nat_gateway_id = each.value.id
   }
 
   tags = {
-    Name = "${var.prefix}-private-rt"
+    Name = "${var.prefix}-private-rt-${each.key}"
   }
 }
 
 resource "aws_route_table_association" "private_rt_association" {
-  subnet_id      = aws_subnet.private_subnet_01.id
-  route_table_id = aws_route_table.private_rt.id
+  for_each = aws_subnet.private_subnet
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private_rt[each.key].id
 }
 
