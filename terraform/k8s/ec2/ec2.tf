@@ -33,6 +33,8 @@ resource "aws_instance" "control_instance" {
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   subnet_id            = var.subnet_ids[count.index % length(var.subnet_ids)]
 
+  user_data = file("${path.module}/control-init.sh")
+
   tags = {
     Name = "${var.prefix}-control-instance-${count.index}"
     Role = "ControlPlane"
@@ -46,6 +48,8 @@ resource "aws_instance" "worker_instance" {
   vpc_security_group_ids = [var.worker_sg_id]
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   subnet_id            = var.subnet_ids[count.index % length(var.subnet_ids)]
+
+  user_data = file("${path.module}/worker-init.sh")
 
   tags = {
     Name = "${var.prefix}-worker-instance-${count.index}"
