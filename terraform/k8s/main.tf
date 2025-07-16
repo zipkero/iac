@@ -29,11 +29,6 @@ variable "public_subnet_config" {
       cidr = "10.0.0.0/24"
       az   = "ap-northeast-2a"
     },
-    {
-      name = "public-subnet-02"
-      cidr = "10.0.10.0/24"
-      az   = "ap-northeast-2c"
-    }
   ]
 }
 
@@ -49,11 +44,6 @@ variable "private_subnet_config" {
       cidr = "10.0.100.0/24"
       az   = "ap-northeast-2a"
     },
-    {
-      name = "private-subnet-02"
-      cidr = "10.0.110.0/24"
-      az   = "ap-northeast-2c"
-    }
   ]
 }
 
@@ -90,7 +80,7 @@ module "ec2" {
   prefix                = var.prefix
   subnet_ids            = module.vpc.private_subnet_ids
   ami_id                = "ami-0ff0bbc5968fcbc61"
-  control_instance_type = "t4g.medium"
+  control_instance_type = "t4g.small"
   worker_instance_type  = "t4g.small"
   control_sg_id         = module.sg.control_sg_id
   worker_sg_id          = module.sg.worker_sg_id
