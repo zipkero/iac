@@ -37,10 +37,10 @@ systemctl restart containerd
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
 enabled=1
 gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
 exclude=kubelet kubeadm kubectl
 EOF
 
@@ -72,6 +72,19 @@ modprobe br_netfilter
 echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
 sysctl -p
 
+# root 사용자용 alias 설정
+cat <<EOF | tee -a /root/.bashrc
+alias k='kubectl'
+complete -F __start_kubectl k
+EOF
+
+# ec2-user 사용자용 alias 설정
+cat <<EOF | tee -a /home/ec2-user/.bashrc
+alias k='kubectl'
+complete -F __start_kubectl k
+EOF
+
+
 cat <<EOF > /home/ec2-user/init-cluster.sh
 #!/bin/bash
 # 클러스터 초기화 (실제 사용 시 실행)
@@ -88,8 +101,7 @@ cp -i /etc/kubernetes/admin.conf /home/ec2-user/.kube/config
 chown ec2-user:ec2-user /home/ec2-user/.kube/config
 
 # 네트워크 플러그인 설치
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
 # 조인 토큰 생성 및 저장
 kubeadm token create --print-join-command > /home/ec2-user/join-command.sh

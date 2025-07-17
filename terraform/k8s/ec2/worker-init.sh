@@ -37,10 +37,10 @@ systemctl restart containerd
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
 enabled=1
 gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
 exclude=kubelet kubeadm kubectl
 EOF
 
@@ -71,23 +71,6 @@ systemctl disable firewalld
 modprobe br_netfilter
 echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
 sysctl -p
-
-cat <<EOF > /home/ec2-user/join-cluster.sh
-#!/bin/bash
-# 클러스터 조인 (실제 사용 시 control plane에서 생성된 join command 사용)
-# 예: kubeadm join <control-plane-ip>:6443 --token <token> --discovery-token-ca-cert-hash <hash>
-
-echo "Please run the join command from the control plane:"
-echo "1. SSH to control plane node"
-echo "2. Copy the command from /home/ec2-user/join-command.sh"
-echo "3. Run the command on this worker node"
-echo ""
-echo "Example:"
-echo "sudo kubeadm join <control-plane-ip>:6443 --token <token> --discovery-token-ca-cert-hash <hash>"
-EOF
-
-chmod +x /home/ec2-user/join-cluster.sh
-chown ec2-user:ec2-user /home/ec2-user/join-cluster.sh
 
 yum install -y git wget
 
