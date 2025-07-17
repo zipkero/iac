@@ -87,8 +87,9 @@ mkdir -p /home/ec2-user/.kube
 cp -i /etc/kubernetes/admin.conf /home/ec2-user/.kube/config
 chown ec2-user:ec2-user /home/ec2-user/.kube/config
 
-# Flannel 네트워크 플러그인 설치
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+# 네트워크 플러그인 설치
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
 
 # 조인 토큰 생성 및 저장
 kubeadm token create --print-join-command > /home/ec2-user/join-command.sh

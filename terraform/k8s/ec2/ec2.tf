@@ -23,6 +23,8 @@ resource "aws_iam_role_policy_attachment" "ssm_managed_role_policy_attach" {
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${var.prefix}-ec2-profile"
   role = aws_iam_role.ec2_role.name
+
+  depends_on = [aws_iam_role.ec2_role]
 }
 
 resource "aws_instance" "control_instance" {
@@ -32,6 +34,8 @@ resource "aws_instance" "control_instance" {
   vpc_security_group_ids = [var.control_sg_id]
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   subnet_id            = var.subnet_ids[count.index % length(var.subnet_ids)]
+  
+  depends_on = [aws_iam_instance_profile.ec2_profile]
 
   user_data = file("${path.module}/control-init.sh")
 
