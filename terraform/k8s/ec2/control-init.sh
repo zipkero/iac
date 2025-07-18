@@ -19,9 +19,9 @@ for key in "${CONFLICTING_KEYS[@]}"; do
 done
 echo "Scan complete."
 
-yum update -y --allowerasing
+dnf update -y --allowerasing
 
-yum install -y containerd yum-utils device-mapper-persistent-data lvm2 git wget
+dnf install -y containerd dnf-utils device-mapper-persistent-data lvm2 git wget
 
 mkdir -p /etc/containerd
 containerd config default | tee /etc/containerd/config.toml
@@ -44,7 +44,7 @@ EOF
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl enable --now kubelet
 
 sleep 5
@@ -85,23 +85,22 @@ EOF
 
 cat <<EOF > /home/ec2-user/init-cluster.sh
 #!/bin/bash
-# 클러스터 초기화 (실제 사용 시 실행)
 kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=\$(hostname -I | awk '{print \$1}')
 
-# kubectl 설정 (root 사용자)
+# kubectl for root
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 chown root:root /root/.kube/config
 
-# kubectl 설정 (ec2-user 사용자)
+# kubectl for ec2-user
 mkdir -p /home/ec2-user/.kube
 cp -i /etc/kubernetes/admin.conf /home/ec2-user/.kube/config
 chown ec2-user:ec2-user /home/ec2-user/.kube/config
 
-# 네트워크 플러그인 설치
+# network plugin
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
-# 조인 토큰 생성 및 저장
+# generate join token
 kubeadm token create --print-join-command > /home/ec2-user/join-command.sh
 chmod +x /home/ec2-user/join-command.sh
 chown ec2-user:ec2-user /home/ec2-user/join-command.sh

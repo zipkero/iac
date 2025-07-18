@@ -19,9 +19,9 @@ for key in "${CONFLICTING_KEYS[@]}"; do
 done
 echo "Scan complete."
 
-yum update -y --allowerasing
+dnf update -y --allowerasing
 
-yum install -y containerd yum-utils device-mapper-persistent-data lvm2 git wget
+dnf install -y containerd dnf-utils device-mapper-persistent-data lvm2 git wget
 
 mkdir -p /etc/containerd
 containerd config default | tee /etc/containerd/config.toml
@@ -44,7 +44,7 @@ EOF
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl enable --now kubelet
 
 sleep 5
