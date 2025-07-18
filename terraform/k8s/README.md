@@ -18,5 +18,3 @@ aws ssm start-session --target {instanceId}
 ```text
 aws ssm start-session --target {instanceId} --document-name AWS-StartInteractiveCommand --parameters 'command=["sudo -u ec2-user bash"]'
 ```
-
-

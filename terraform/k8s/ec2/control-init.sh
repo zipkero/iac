@@ -21,18 +21,15 @@ echo "Scan complete."
 
 yum update -y --allowerasing
 
-yum install -y yum-utils device-mapper-persistent-data lvm2
-
-yum install -y docker
-systemctl start docker
-systemctl enable docker
-
-usermod -a -G docker ec2-user
+yum install -y containerd yum-utils device-mapper-persistent-data lvm2 git wget
 
 mkdir -p /etc/containerd
 containerd config default | tee /etc/containerd/config.toml
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+systemctl enable containerd
 systemctl restart containerd
+
+sleep 5
 
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -49,6 +46,8 @@ sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl enable --now kubelet
+
+sleep 5
 
 swapoff -a
 sed -i '/swap/d' /etc/fstab
@@ -84,7 +83,6 @@ alias k='kubectl'
 complete -F __start_kubectl k
 EOF
 
-
 cat <<EOF > /home/ec2-user/init-cluster.sh
 #!/bin/bash
 # 클러스터 초기화 (실제 사용 시 실행)
@@ -114,18 +112,3 @@ EOF
 
 chmod +x /home/ec2-user/init-cluster.sh
 chown ec2-user:ec2-user /home/ec2-user/init-cluster.sh
-
-yum install -y git wget
-
-cat <<EOF > /etc/docker/daemon.json
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-
-systemctl restart docker
